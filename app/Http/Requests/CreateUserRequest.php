@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules;
 
 class CreateUserRequest extends FormRequest
 {
@@ -17,17 +18,6 @@ class CreateUserRequest extends FormRequest
         return true;
     }
 
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'email' => $this->emailInput,
-            'name' => $this->nameInput,
-            'password' => $this->passwordInput,
-            'key' => $this->keyInput,
-            'url' => $this->urlInput,
-        ]);
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -38,7 +28,7 @@ class CreateUserRequest extends FormRequest
         return [
             'email' => ['required', 'email', 'unique:users'],
             'name' => ['required'],
-            'password' => ['required', 'min:6', 'max:25'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'key' => ['required'],
             'url' => ['required', 'url'],
         ];

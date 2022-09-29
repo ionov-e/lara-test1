@@ -49,8 +49,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    public mixed $name;
-
     /**
      * The attributes that are mass assignable.
      *

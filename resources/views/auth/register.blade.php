@@ -50,6 +50,24 @@
                 <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
             </div>
 
+            <!-- Url -->
+            <div class="mt-4">
+                <x-input-label for="url" :value="__('Your URL')" />
+
+                <x-text-input id="url" class="block mt-1 w-full" type="url" name="url" :value="old('url')" required  />
+
+                <x-input-error :messages="$errors->get('url')" class="mt-2" />
+            </div>
+
+            <!-- API Key -->
+            <div class="mt-4">
+                <x-input-label for="key" :value="__('API Key')" />
+
+                <x-text-input id="key" class="block mt-1 w-full" type="text" name="key" minlength="4" :value="old('key')" required />
+
+                <x-input-error :messages="$errors->get('key')" class="mt-2" />
+            </div>
+
             <div class="flex items-center justify-end mt-4">
                 <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
                     {{ __('Already registered?') }}
