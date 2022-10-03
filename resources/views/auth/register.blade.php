@@ -57,6 +57,7 @@
                 <x-text-input id="url" class="block mt-1 w-full" type="url" name="url" :value="old('url')" required  />
 
                 <x-input-error :messages="$errors->get('url')" class="mt-2" />
+                <x-input-error :messages="$errors->get('key')" class="mt-2" />
             </div>
 
             <!-- API Key -->

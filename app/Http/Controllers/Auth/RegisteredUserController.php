@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 class RegisteredUserController extends Controller
 {
 
-    const USER_SETTING_MODEL_FIELDS = ['key', 'url'];
+    const USER_SETTING_MODEL_FIELDS = ['key', 'url']; // Поля из формы, используемых только для модели UserSetting
 
     /**
      * Display the registration view.

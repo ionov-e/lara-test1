@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CheckApiAuth;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
 
@@ -29,8 +30,8 @@ class CreateUserRequest extends FormRequest
             'email' => ['required', 'email', 'unique:users'],
             'name' => ['required'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'key' => ['required'],
             'url' => ['required', 'url'],
+            'key' => ['required', new CheckApiAuth()],
         ];
     }
 
