@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\ValidatedInput;
 use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
@@ -49,6 +50,50 @@ class VetApiService
         return $response['data'][$model];
     }
 
+    public function getClient(int $id): array
+    {
+        $model = 'client';
+        $url = uri('client')->asString() . "/$id";
+        $options = ['headers' => $this->getAuthHeaders()->asKeyValue()];
+        $response = json_decode(
+            strval($this->client->request('GET', $url, $options)->getBody()),
+            true
+        );
+        return $response['data'][$model];
+    }
+
+    public function deleteClients(int $id)
+    {
+        $url = uri('client')->asString() . "/$id";
+        $options = ['headers' => $this->getAuthHeaders()->asKeyValue()];
+        $this->client->delete($url, $options)->getStatusCode();
+    }
+
+    public function createClient(ValidatedInput|array $validatedData)
+    {
+        $model = 'client';
+        $this->client->request(
+            'POST',
+            uri($model)->asString(),
+            [
+                'headers' => $this->getAuthHeaders()->asKeyValue(),
+                'json' => $validatedData
+            ]
+        )->getBody();
+    }
+
+    public function editClient(ValidatedInput|array $validatedData, int $id)
+    {
+        $url = uri('client')->asString() . "/$id";
+        $this->client->request(
+            'PUT',
+            $url,
+            [
+                'headers' => $this->getAuthHeaders()->asKeyValue(),
+                'json' => $validatedData
+            ]
+        )->getBody();
+    }
 
     private function getAuthHeaders(?string $apiKey = null): WithAuth
     {
