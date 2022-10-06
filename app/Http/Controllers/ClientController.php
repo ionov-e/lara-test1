@@ -16,7 +16,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = (new VetApiService(Auth::user()))->getClients();
+        $clients = (new VetApiService(Auth::user()))->getClientList();
         return view('dashboard', ['clients' => $clients]);
     }
 
@@ -81,7 +81,7 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        (new VetApiService(Auth::user()))->deleteClients($id);
+        (new VetApiService(Auth::user()))->deleteClient($id);
         return redirect('/clients');
     }
 }

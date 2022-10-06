@@ -19,33 +19,28 @@ use function Otis22\VetmanagerRestApi\uri;
 class VetApiService
 {
 
-    private string $key;
     private Client $client;
+    private WithAuth $authHeaders;
 
     public function __construct(User $user)
     {
-        $this->key = $user->userSetting->key;
         $this->client = new Client(['base_uri' => $user->userSetting->url]);
+        $this->authHeaders = new WithAuth(new ByApiKey(new ApiKey($user->userSetting->key)));
     }
 
-    public function getClients(int $currentPage = 0): array
+    public function getClientList(int $currentPage = 0): array
     {
         $model = 'client';
         $pagedQuery = new PagedQuery(new Query(new Filters(), new Sorts()), 50, $currentPage);
+        $options = [
+            'headers' => $this->authHeaders->asKeyValue(),
+            'query' => $pagedQuery->asKeyValue()
+        ];
+        $url = uri($model)->asString();
 
-        $response = json_decode(
-            strval(
-                $this->client->request(
-                    'GET',
-                    uri($model)->asString(),
-                    [
-                        'headers' => $this->getAuthHeaders()->asKeyValue(),
-                        'query' => $pagedQuery->asKeyValue()
-                    ]
-                )->getBody()
-            ),
-            true
-        );
+        $response = $this->client->request('GET', $url, $options);
+
+        $response = json_decode(strval($response->getBody()), true);
 
         return $response['data'][$model];
     }
@@ -54,56 +49,36 @@ class VetApiService
     {
         $model = 'client';
         $url = uri('client')->asString() . "/$id";
-        $options = ['headers' => $this->getAuthHeaders()->asKeyValue()];
-        $response = json_decode(
-            strval($this->client->request('GET', $url, $options)->getBody()),
-            true
-        );
+        $options = ['headers' => $this->authHeaders->asKeyValue()];
+        $response = json_decode(strval($this->client->request('GET', $url, $options)->getBody()), true);
         return $response['data'][$model];
     }
 
-    public function deleteClients(int $id)
+    public function deleteClient(int $id): void
     {
         $url = uri('client')->asString() . "/$id";
-        $options = ['headers' => $this->getAuthHeaders()->asKeyValue()];
+        $options = ['headers' => $this->authHeaders->asKeyValue()];
         $this->client->delete($url, $options)->getStatusCode();
     }
 
-    public function createClient(ValidatedInput|array $validatedData)
+    public function createClient(ValidatedInput|array $validatedData): void
     {
-        $model = 'client';
-        $this->client->request(
-            'POST',
-            uri($model)->asString(),
-            [
-                'headers' => $this->getAuthHeaders()->asKeyValue(),
-                'json' => $validatedData
-            ]
-        )->getBody();
+        $url = uri('client')->asString();
+        $options = [
+            'headers' => $this->authHeaders->asKeyValue(),
+            'json' => $validatedData
+        ];
+        $this->client->request('POST', $url, $options);
     }
 
-    public function editClient(ValidatedInput|array $validatedData, int $id)
+    public function editClient(ValidatedInput|array $validatedData, int $id): void
     {
         $url = uri('client')->asString() . "/$id";
-        $this->client->request(
-            'PUT',
-            $url,
-            [
-                'headers' => $this->getAuthHeaders()->asKeyValue(),
-                'json' => $validatedData
-            ]
-        )->getBody();
-    }
-
-    private function getAuthHeaders(?string $apiKey = null): WithAuth
-    {
-        $apiKey = $apiKey ?? $this->key;
-
-        return new WithAuth(
-            new ByApiKey(
-                new ApiKey($apiKey)
-            )
-        );
+        $options = [
+            'headers' => $this->authHeaders->asKeyValue(),
+            'json' => $validatedData
+        ];
+        $this->client->request('PUT', $url, $options);
     }
 
     static function authenticateUser(string $apiKey, string $uri): bool
@@ -111,17 +86,9 @@ class VetApiService
         try {
             $client = new Client(['base_uri' => $uri]);
 
-            $authHeaders = new WithAuth(
-                new ByApiKey(
-                    new ApiKey($apiKey)
-                )
-            );
+            $authHeaders = new WithAuth(new ByApiKey(new ApiKey($apiKey)));
 
-            $return = $client->request(
-                'GET',
-                '/rest/api/user',
-                ['headers' => $authHeaders->asKeyValue()]
-            );
+            $return = $client->request('GET', '/rest/api/user', ['headers' => $authHeaders->asKeyValue()]);
 
             if (200 == $return->getStatusCode()) {
                 return true;
