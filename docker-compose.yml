@@ -8,6 +8,8 @@ services:
             args:
                 WWWGROUP: '${WWWGROUP}'
                 PHP_USER: '${PHP_USER}'
+                PHP_UID: '${PHP_UID}'
+                PHP_GID: '${PHP_GID}'
         image: sail-8.1/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'

@@ -4,6 +4,8 @@ LABEL maintainer="Taylor Otwell"
 
 ARG WWWGROUP
 ARG PHP_USER
+ARG PHP_UID
+ARG PHP_GID
 ARG NODE_VERSION=16
 ARG POSTGRES_VERSION=14
 
@@ -55,7 +57,7 @@ RUN groupadd --force -g $WWWGROUP sail
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 
 RUN groupadd --force -g 1000 $PHP_USER
-RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1000 $PHP_USER
+RUN useradd -ms /bin/bash --no-user-group -g $PHP_GID -u $PHP_UID $PHP_USER
 
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
