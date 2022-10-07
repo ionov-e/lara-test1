@@ -9,6 +9,9 @@ use Illuminate\Support\ValidatedInput;
 use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
+use Otis22\VetmanagerRestApi\Model\Property;
+use Otis22\VetmanagerRestApi\Query\Filter\Like;
+use Otis22\VetmanagerRestApi\Query\Filter\Value\StringValue;
 use Otis22\VetmanagerRestApi\Query\Filters;
 use Otis22\VetmanagerRestApi\Query\PagedQuery;
 use Otis22\VetmanagerRestApi\Query\Query;
@@ -31,30 +34,44 @@ class VetApiService
         $this->authHeaders = new WithAuth(new ByApiKey(new ApiKey($user->userSetting->key)));
     }
 
-    public function getClientList(int $currentPage = 0): array
+    /**
+     * Возвращает массив с моделям, удовлетворяющих запросу. Если используется только перван параметр - фильтра не будет
+     *
+     * @param string $model например 'client'
+     * @param string $searchKey например 'last_name'
+     * @param string $searchValue например 'Михалков'
+     * @param int $limit максимальное количество возвращаемых элементов в массиве
+     * @param int $currentPage для пагинации
+     *
+     * @return array Каждый элемент будет в себе содержать все значения от сервера
+     */
+    public function search(string $model, string $searchKey = '', string $searchValue = '', int $limit = 50, int $currentPage = 0): array
     {
-        $model = 'client';
-        $pagedQuery = new PagedQuery(new Query(new Filters(), new Sorts()), 50, $currentPage);
-        $options = [
-            'headers' => $this->authHeaders->asKeyValue(),
-            'query' => $pagedQuery->asKeyValue()
-        ];
-        $url = uri($model)->asString();
+        try {
+            if (empty($searchKey)) {
+                $filters = new Filters();
+            } else {
+                $filters = new Filters(new Like(new Property($searchKey), new StringValue($searchValue)));
+            }
 
-        $response = $this->client->request('GET', $url, $options);
+            $query = new PagedQuery(new Query($filters, new Sorts()), $limit, $currentPage);
 
-        $response = json_decode(strval($response->getBody()), true);
+            $options = [
+                'headers' => $this->authHeaders->asKeyValue(),
+                'query' => $query->asKeyValue()
+            ];
 
-        return $response['data'][$model];
-    }
+            $url = uri($model)->asString();
 
-    public function getClientSearch(string $query): array
-    {
-        $model = 'client';
-        $url = uri($model)->asString() . "/clientsSearchData?search_query={$query}";
-        $options = ['headers' => $this->authHeaders->asKeyValue()];
-        $response = json_decode(strval($this->client->request('GET', $url, $options)->getBody()), true);
-        return $response['data'][$model];
+            $response = $this->client->request('GET', $url, $options);
+
+            $response = json_decode(strval($response->getBody()), true);
+
+            return $response['data'][$model];
+        } catch (\Throwable $e) {
+            logger("APISearch: Exception: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function get(string $model, int $id): array

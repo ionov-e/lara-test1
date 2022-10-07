@@ -17,7 +17,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = (new VetApiService(Auth::user()))->getClientList();
+        $clients = (new VetApiService(Auth::user()))->search(VetApiService::CLIENT_MODEL);
         return view('dashboard', ['clients' => $clients, 'title' => "Dashboard"]);
     }
 
@@ -94,7 +94,7 @@ class ClientController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $clients = (new VetApiService(Auth::user()))->getClientSearch($query);
+        $clients = (new VetApiService(Auth::user()))->search(VetApiService::CLIENT_MODEL, 'last_name', $query);
         return view('dashboard', ['clients' => $clients, 'title' => "Search result for '$query'"]);
     }
 }
