@@ -89,8 +89,8 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        (new VetApiService(Auth::user()))
-            ->delete(VetApiService::CLIENT_MODEL, $id);
+        (new VetApiService(Auth::user()))->deleteClient($id);
+
         return redirect('/clients');
     }
 

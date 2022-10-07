@@ -9,6 +9,14 @@
         <div class="mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
+                    <a href="{{ route('clients.edit', $client['id']) }}">Edit</a>
+                    <br>
+                    <form action="{{ route('clients.destroy' , $client['id'])}}" method="POST">
+                        {{ csrf_field() }}
+                        <input name="_method" type="hidden" value="DELETE">
+                        <button type="submit" class="btn btn-primary">Delete</button>
+                    </form>
+                    <br>
                     <a href="{{ route('pet.create', $client['id']) }}">Create Pet</a>
                     <br><br>
                     <table class="table table-striped">

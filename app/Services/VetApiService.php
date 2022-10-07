@@ -111,6 +111,24 @@ class VetApiService
         $this->client->delete($url, $options)->getStatusCode();
     }
 
+
+    public function deleteClient(int $id): void
+    {
+        $petsData = $this->search(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
+
+        if (!empty($petsData)) {
+            $petIdsLog = [];
+            foreach ($petsData as $pet) {
+                $petId = $pet['id'];
+                $this->delete(VetApiService::PET_MODEL, $petId);
+                $petIdsLog[] = $petId;
+            }
+            logger("APIDeletedPets for Client $id: " . implode(",", $petIdsLog));
+        }
+
+        $this->delete(VetApiService::CLIENT_MODEL, $id);
+    }
+
     static function authenticateUser(string $apiKey, string $uri): bool
     {
         try {
