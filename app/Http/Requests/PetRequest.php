@@ -26,7 +26,6 @@ class PetRequest extends FormRequest
     {
         return [
                 'alias' => ['required'],
-                'owner_id' => ['required'],
                 'type_id' => ['required'],
                 'breed_id' => ['required'],
             ]
@@ -36,7 +35,9 @@ class PetRequest extends FormRequest
 
     protected function store()
     {
-        return [];
+        return [
+            'owner_id' => ['required'],
+        ];
     }
 
     protected function update()

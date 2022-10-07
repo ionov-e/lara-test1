@@ -7,15 +7,13 @@
         </x-slot>
 
         <h2 class="font-semibold text-xl text-center text-gray-800 leading-tight">
-            {{ __('Edit Pet') }}
+            {{ __('Edit Pet ') }}{{ $id }}
         </h2>
 
         <form method="POST" action="{{ route('pet.update', $id) }}">
 
             @csrf
             @method('PUT')
-
-            <input type="hidden" name="owner_id" value="{{ $ownerId }}">
 
             <div>
                 <x-input-label for="alias" :value="__('alias')" />
