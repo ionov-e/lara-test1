@@ -19,6 +19,9 @@ use function Otis22\VetmanagerRestApi\uri;
 class VetApiService
 {
 
+    const CLIENT_MODEL = 'client';
+    const PET_MODEL = 'pet';
+
     private Client $client;
     private WithAuth $authHeaders;
 
@@ -45,25 +48,26 @@ class VetApiService
         return $response['data'][$model];
     }
 
-    public function getClient(int $id): array
+    public function getClientSearch(string $query): array
     {
         $model = 'client';
+        $url = uri($model)->asString() . "/clientsSearchData?search_query={$query}";
+        $options = ['headers' => $this->authHeaders->asKeyValue()];
+        $response = json_decode(strval($this->client->request('GET', $url, $options)->getBody()), true);
+        return $response['data'][$model];
+    }
+
+    public function get(string $model, int $id): array
+    {
         $url = uri('client')->asString() . "/$id";
         $options = ['headers' => $this->authHeaders->asKeyValue()];
         $response = json_decode(strval($this->client->request('GET', $url, $options)->getBody()), true);
         return $response['data'][$model];
     }
 
-    public function deleteClient(int $id): void
+    public function create(string $model, ValidatedInput|array $validatedData): void
     {
-        $url = uri('client')->asString() . "/$id";
-        $options = ['headers' => $this->authHeaders->asKeyValue()];
-        $this->client->delete($url, $options)->getStatusCode();
-    }
-
-    public function createClient(ValidatedInput|array $validatedData): void
-    {
-        $url = uri('client')->asString();
+        $url = uri($model)->asString();
         $options = [
             'headers' => $this->authHeaders->asKeyValue(),
             'json' => $validatedData
@@ -71,14 +75,21 @@ class VetApiService
         $this->client->request('POST', $url, $options);
     }
 
-    public function editClient(ValidatedInput|array $validatedData, int $id): void
+    public function edit(string $model, ValidatedInput|array $validatedData, int $id): void
     {
-        $url = uri('client')->asString() . "/$id";
+        $url = uri($model)->asString() . "/$id";
         $options = [
             'headers' => $this->authHeaders->asKeyValue(),
             'json' => $validatedData
         ];
         $this->client->request('PUT', $url, $options);
+    }
+
+    public function delete(string $model, int $id): void
+    {
+        $url = uri($model)->asString() . "/$id";
+        $options = ['headers' => $this->authHeaders->asKeyValue()];
+        $this->client->delete($url, $options)->getStatusCode();
     }
 
     static function authenticateUser(string $apiKey, string $uri): bool

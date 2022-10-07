@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +19,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [ClientController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::resource('clients', ClientController::class)->middleware(['auth', 'verified']);
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
+    Route::resource('clients', ClientController::class);
+    Route::get('/search', 'App\Http\Controllers\ClientController@search');
+    Route::resource('pet', PetController::class)->except(['create']);
+    Route::get('/create-pet-for-owner/{id}', [PetController::class, 'create'])->name('pet.create');
+});
 
 require __DIR__ . '/auth.php';

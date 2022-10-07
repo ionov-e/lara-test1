@@ -8,6 +8,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
@@ -17,7 +18,7 @@ class ClientController extends Controller
     public function index()
     {
         $clients = (new VetApiService(Auth::user()))->getClientList();
-        return view('dashboard', ['clients' => $clients]);
+        return view('dashboard', ['clients' => $clients, 'title' => "Dashboard"]);
     }
 
     /**
@@ -34,7 +35,8 @@ class ClientController extends Controller
     public function store(ClientRequest $request)
     {
         $validatedData = $request->validated();
-        (new VetApiService(Auth::user()))->createClient($validatedData);
+        (new VetApiService(Auth::user()))
+            ->create(VetApiService::CLIENT_MODEL, $validatedData);
         return redirect('/clients');
     }
 
@@ -45,7 +47,8 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        $clientData = (new VetApiService(Auth::user()))->getClient($id);
+        $clientData = (new VetApiService(Auth::user()))
+            ->get(VetApiService::CLIENT_MODEL, $id);
         return view('clients.show', ['client' => $clientData]);
     }
 
@@ -70,7 +73,8 @@ class ClientController extends Controller
     public function update(ClientRequest $request, int $id)
     {
         $validatedData = $request->validated();
-        (new VetApiService(Auth::user()))->editClient($validatedData, $id);
+        (new VetApiService(Auth::user()))
+            ->edit(VetApiService::CLIENT_MODEL, $validatedData, $id);
         return redirect('/clients');
     }
 
@@ -81,7 +85,16 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        (new VetApiService(Auth::user()))->deleteClient($id);
+        (new VetApiService(Auth::user()))
+            ->delete(VetApiService::CLIENT_MODEL, $id);
         return redirect('/clients');
+    }
+
+    /** Выводит результат поиска */
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $clients = (new VetApiService(Auth::user()))->getClientSearch($query);
+        return view('dashboard', ['clients' => $clients, 'title' => "Search result for '$query'"]);
     }
 }

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
+            {{ $title }}
         </h2>
     </x-slot>
 
@@ -10,6 +10,12 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <a href="{{ route('clients.create') }}">Create</a>
+                    <br>
+                    <br>
+                    <form action="/search" method="GET">
+                        <input id="type_id" class="block mt-1 w-full" type="text" name="query" placeholder="Client Search" required autofocus />
+                        <button type="submit">Search</button>
+                    </form>
                     <br>
                     <br>
                     <table class="table table-striped">
@@ -23,6 +29,7 @@
                         </thead>
                         <tbody>
                         @foreach ($clients as $client)
+                            @php($client['id'] = $client['id'] ?? $client['client_id'])
                             <tr>
                                 <th scope="row">{{ $client['id'] }}</th>
                                 <td>{{ $client['last_name'] }}</td>

@@ -10,8 +10,7 @@
             {{ __('Edit Client') }}
         </h2>
 
-{{--        <form method="POST" action="{{ route('clients.update', $id) }}">--}}
-        <form method="POST" action="/clients/{{ $id }}">
+        <form method="POST" action="{{ route('clients.update', $id) }}">
 
             @csrf
             @method('PUT')
