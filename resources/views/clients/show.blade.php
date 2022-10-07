@@ -17,7 +17,7 @@
                         <button type="submit" class="btn btn-primary">Delete</button>
                     </form>
                     <br>
-                    <a href="{{ route('pet.create', $client['id']) }}">Create Pet</a>
+                    <a href="{{ route('pets.create', $client['id']) }}">Create Pet</a>
                     <br><br>
                     <table class="table table-striped">
                         <thead>
@@ -51,7 +51,7 @@
                     <div class="p-6 bg-white border-b border-gray-200">
                         <h2>Pet {{ ++$petCount }}</h2>
                         <br><br>
-                        @include('pet.table')
+                        @include('pets.table')
                     </div>
                 </div>
             </div>

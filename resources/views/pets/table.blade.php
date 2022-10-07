@@ -16,14 +16,14 @@
         <td><br><br></td>
     </tr>
     <tr>
-        <td><a href="{{ route('pet.show', $pet['id']) }}">View</a></td>
+        <td><a href="{{ route('pets.show', $pet['id']) }}">View</a></td>
     </tr>
     <tr>
-        <td><a href="{{ route('pet.edit', $pet['id']) }}">Edit</a></td>
+        <td><a href="{{ route('pets.edit', $pet['id']) }}">Edit</a></td>
     </tr>
     <tr>
         <td>
-            <form action="{{ route('pet.destroy' , $pet['id'])}}" method="POST">
+            <form action="{{ route('pets.destroy', $pet['id'])}}" method="POST">
                 {{ csrf_field() }}
                 <input name="_method" type="hidden" value="DELETE">
                 <button type="submit" class="btn btn-primary">Delete</button>

@@ -23,8 +23,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
     Route::resource('clients', ClientController::class);
     Route::get('/search', 'App\Http\Controllers\ClientController@search');
-    Route::resource('pet', PetController::class)->except(['create', 'index']);
-    Route::get('/create-pet-for-owner/{id}', [PetController::class, 'create'])->name('pet.create');
+    Route::resource('pets', PetController::class)->except(['create', 'index']);
+    Route::get('/create-pet-for-owner/{id}', [PetController::class, 'create'])->name('pets.create');
 });
 
 require __DIR__ . '/auth.php';

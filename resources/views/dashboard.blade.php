@@ -9,12 +9,12 @@
         <div class="mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <a href="{{ route('clients.create') }}">Create</a>
+                    <a href="{{ route('clients.create') }}">Create New Client</a>
                     <br>
                     <br>
                     <form action="/search" method="GET">
                         <input id="type_id" class="block mt-1 w-full" type="text" name="query" placeholder="Client Search" required autofocus />
-                        <button type="submit">Search</button>
+                        <button type="submit">Submit Search</button>
                     </form>
                     <br>
                     <br>

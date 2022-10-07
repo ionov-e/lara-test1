@@ -10,7 +10,7 @@
             {{ __('Create Pet For Owner') }} {{ $ownerId }}
         </h2>
 
-        <form method="POST" action="{{ route('pet.store') }}">
+        <form method="POST" action="{{ route('pets.store') }}">
 
             @csrf
 

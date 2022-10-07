@@ -11,7 +11,7 @@ class PetController extends Controller
     /** Show the form for creating a new resource. */
     public function create(int $ownerId)
     {
-        return view('pet.create', ['ownerId' => $ownerId]);
+        return view('pets.create', compact('ownerId'));
     }
 
     /** Store a newly created resource in storage. */
@@ -21,7 +21,7 @@ class PetController extends Controller
         (new VetApiService(Auth::user()))
             ->create(VetApiService::PET_MODEL, $validatedData);
 
-        return redirect("/clients/{$validatedData['owner_id']}");
+        return redirect()->route('clients.show', $validatedData['owner_id']);
     }
 
     /** Display the specified resource. */
@@ -31,15 +31,15 @@ class PetController extends Controller
             ->search(VetApiService::PET_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1);
         if (empty($petData)) {
             logger("APIShowPet: No pet with id: $id");
-            return redirect('/clients');
+            return redirect()->route('clients.index');
         }
-        return view('pet.show', ['pet' => $petData[0]]);
+        return view('pets.show', ['pet' => $petData[0]]);
     }
 
     /** Show the form for editing the specified resource. */
     public function edit(int $id)
     {
-        return view('pet.edit', ['id' => $id]);
+        return view('pets.edit', compact('id'));
     }
 
     /** Update the specified resource in storage. */
@@ -49,7 +49,7 @@ class PetController extends Controller
         (new VetApiService(Auth::user()))
             ->edit(VetApiService::PET_MODEL, $validatedData, $id);
 
-        return redirect("/pet/{$id}");
+        return redirect()->route('pets.show', $id);
     }
 
     /** Remove the specified resource from storage. */
@@ -58,6 +58,6 @@ class PetController extends Controller
         (new VetApiService(Auth::user()))
             ->delete(VetApiService::PET_MODEL, $id);
 
-        return redirect('/clients');
+        return redirect()->route('clients.index');
     }
 }

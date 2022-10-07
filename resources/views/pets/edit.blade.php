@@ -10,7 +10,7 @@
             {{ __('Edit Pet ') }}{{ $id }}
         </h2>
 
-        <form method="POST" action="{{ route('pet.update', $id) }}">
+        <form method="POST" action="{{ route('pets.update', $id) }}">
 
             @csrf
             @method('PUT')
