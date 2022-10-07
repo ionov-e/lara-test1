@@ -10,7 +10,6 @@ use Otis22\VetmanagerRestApi\Headers\WithAuth;
 use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
 use Otis22\VetmanagerRestApi\Model\Property;
-use Otis22\VetmanagerRestApi\Query\Filter\Like;
 use Otis22\VetmanagerRestApi\Query\Filter\Value\StringValue;
 use Otis22\VetmanagerRestApi\Query\Filters;
 use Otis22\VetmanagerRestApi\Query\PagedQuery;
@@ -24,6 +23,9 @@ class VetApiService
 
     const CLIENT_MODEL = 'client';
     const PET_MODEL = 'pet';
+
+    const LIKE_OPERATOR = 'Otis22\VetmanagerRestApi\Query\Filter\Like';
+    const EQUAL_OPERATOR = 'Otis22\VetmanagerRestApi\Query\Filter\EqualTo';
 
     private Client $client;
     private WithAuth $authHeaders;
@@ -45,13 +47,13 @@ class VetApiService
      *
      * @return array Каждый элемент будет в себе содержать все значения от сервера
      */
-    public function search(string $model, string $searchKey = '', string $searchValue = '', int $limit = 50, int $currentPage = 0): array
+    public function search(string $model, string $searchKey = '', string $searchValue = '', string $operator = self::LIKE_OPERATOR, int $limit = 50, int $currentPage = 0): array
     {
         try {
             if (empty($searchKey)) {
                 $filters = new Filters();
             } else {
-                $filters = new Filters(new Like(new Property($searchKey), new StringValue($searchValue)));
+                $filters = new Filters(new $operator (new Property($searchKey), new StringValue($searchValue)));
             }
 
             $query = new PagedQuery(new Query($filters, new Sorts()), $limit, $currentPage);

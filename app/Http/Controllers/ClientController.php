@@ -48,8 +48,8 @@ class ClientController extends Controller
     public function show($id)
     {
         $clientData = (new VetApiService(Auth::user()))
-            ->get(VetApiService::CLIENT_MODEL, $id);
-        return view('clients.show', ['client' => $clientData]);
+            ->search(VetApiService::CLIENT_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR);
+        return view('clients.show', ['client' => $clientData[0]]);
     }
 
     /**
