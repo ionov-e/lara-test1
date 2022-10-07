@@ -42,6 +42,9 @@ class PetController extends Controller
      */
     public function show(int $id)
     {
+        $petData = (new VetApiService(Auth::user()))
+            ->search(VetApiService::PET_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1);
+        return view('pet.show', ['pet' => $petData[0]]);
     }
 
     /**

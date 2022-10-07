@@ -25,10 +25,43 @@
                                 <td>{{ json_encode($value, JSON_UNESCAPED_UNICODE) }}</td>
                             </tr>
                         @endforeach
+                        <tr>
+                            <td>Number of pets</td>
+                            <td>{{ count($pets) }}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+
+    @foreach ($pets as $pet)
+        <div class="py-12">
+            <div class="mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 bg-white border-b border-gray-200">
+                        <h3>Pet</h3>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr style="text-align: left;">
+                                <th scope="col">key</th>
+                                <th scope="col">value</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($pet as $key => $value)
+                                <tr>
+                                    <td>{{ $key }}</td>
+                                    <td>{{ json_encode($value, JSON_UNESCAPED_UNICODE) }}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
 </x-app-layout>
