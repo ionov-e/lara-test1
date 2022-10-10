@@ -1,66 +1,82 @@
+# Небольшая интеграция с АПИ vetmanager используя Laravel
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Крошечная инструкция
 
-## About Laravel
+1. Клонировать гит
+2. `cd …`  - зайти в директорию проекта (вместо троеточия)
+3. Скопировать **.env.example** (оставив в той же папке - в корне) по названием **.env**
+4. В этом файле окружения (**.env**) отредактировать последние 3 строки (ввести свой линукс **логин**, **uid**, **gid**)
+5. `sail up -d`
+6. `chmod -R 777 storage` - не думаю что стоит париться в данном случае
+7. `docker exec -it -u $USER lara-test1-laravel.test-1 bash`  - название контейнера если отличается - подредактировать
+8. `composer install`
+9. `php artisan key:generate`
+10. `php artisan storage:link`
+11. `php artisan migrate`
+12. `php artisan db:seed`
+13. Для Breeze (квик-старт аутентификации) вроде нужно. Не хватило времени доразобраться и решить проблему косметическую
+    связанную с ним, но на функционал не влияет
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    `npm install`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+    `npm run build`
+14. (Полезно только для редактирования). Последние 2 команды
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    `php artisan clear-compiled`
 
-## Learning Laravel
+    `php artisan ide-helper:generate`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Использование вкратце
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Внешний вид не интересовал.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Открыть сайт.
+2. Справа-сверху Регистрация
+3. Что нравится вводить, а это лучше сразу мое
 
-## Laravel Sponsors
+   Your URL: адрес полученный после регистрации на **vetmanager**. Будет иметь вид: **https://XXX.vetmanager2.ru**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+   Апи ключ: ключ полученный после регистрации на **vetmanager**
 
-### Premium Partners
+4. Кнопочки выглядят так как выглядят. Но понятно что делают и к чему относятся, как например “**Create New Client**“
+   вверху.
+   Чуть ниже в этой же таблице есть поиск. И в последних 3 столбцах кнопки (**View**, **Edit**, **Delete**).
+   Дальше все будет понятно и интуитивно вполне.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Выполнение задания
 
-## Contributing
+1. Должен быть предустановлен админ пользователь admin@admin.com, pass: secret (через сидер)
+2. Должна быть отдельная табличка для сохранения настроек апи (урл и ключ)
+3. Должны быть настроены связи юзера с этой табличкой
+4. Делаем авторизацию. После нее человек попадает на домашнюю страницу.
+5. Через мидлвар делаем проверку (установлены ли у него настройки) если не установлены, то кидаем на отдельную страницу
+   где пользователь указывает данные.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+   **_При регистрации проверка. Иначе не дает зарегистрироваться_**
+6. На хоум странице у него есть табличка клиентов ветменеджера (все запросы делать с лимитом 50), т.е мы видим 50
+   клиентов с ветменеджера.
+7. Также видим поиск по фио (который тоже находит первые 50 совпадений
 
-## Code of Conduct
+   **_По фамилии сделал - совсем несложно, если хотели иначе и подразумевалось именно ФИО_**
+8. Есть кнопки (Добавить, Просмотреть, Редактировать и Удалить)
+9. Добавить, Редактировать и Удалить - понятно что делают (при удалении удалить и всех питомцев)
+10. При нажатии на просмотр мы попадаем в просмотр профиля клиента и там видим грид с питомцами клиента
+11. У них тоже есть свой круд
+12. Делаем серверную валидацию через FormRequest'ы
+13. Также делаем красивое отображение ошибок валидации или других ошибок
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    **_Могу докрутить возможность выноса ошибок, если по АПИ что-то непредсказуемое или ничего не приходить например._**
+14. Также во вьюшках используем @include других вьюшек
 
-## Security Vulnerabilities
+    **_Один раз лишь пригодилось_**
+15. Для работы с Api можно использовать библиотеку [https://github.com/otis22/vetmanager-rest-api]()
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Натянуть внешний вид - совсем не проблема и быстро.
 
-## License
+Да, логгер и тесты добавил бы
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Да, конечно, можно вывести все существующие поля для заполнения. И при редактировании, например, предзаполнить старым
+содержимым. Да, конечно можно выбор породы симпатично сделать. И кстати,
+в [https://help.vetmanager.cloud/article/3025]() (Создание питомца с минимальными данными). **alias** и **owner_id**
+недостаточно. Еще **type_id** и **breed_id** необходимо, можно кому-нибудь исправить
