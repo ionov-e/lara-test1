@@ -47,7 +47,7 @@ class VetApiService
      *
      * @return array Каждый элемент будет в себе содержать все значения от сервера
      */
-    public function search(string $model, string $searchKey = '', string $searchValue = '', string $operator = self::LIKE_OPERATOR, int $limit = 50, int $currentPage = 0): array
+    public function get(string $model, string $searchKey = '', string $searchValue = '', string $operator = self::LIKE_OPERATOR, int $limit = 50, int $currentPage = 0): array
     {
         try {
             if (empty($searchKey)) {
@@ -74,14 +74,6 @@ class VetApiService
             logger("APISearch: Exception: " . $e->getMessage());
             return [];
         }
-    }
-
-    public function get(string $model, int $id): array
-    {
-        $url = uri('client')->asString() . "/$id";
-        $options = ['headers' => $this->authHeaders->asKeyValue()];
-        $response = json_decode(strval($this->client->request('GET', $url, $options)->getBody()), true);
-        return $response['data'][$model];
     }
 
     public function create(string $model, ValidatedInput|array $validatedData): void
@@ -112,9 +104,10 @@ class VetApiService
     }
 
 
+    /** "Удаляет" клиента, предварительно удалив всех его питомцев */
     public function deleteClient(int $id): void
     {
-        $petsData = $this->search(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
+        $petsData = $this->get(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
 
         if (!empty($petsData)) {
             $petIdsLog = [];

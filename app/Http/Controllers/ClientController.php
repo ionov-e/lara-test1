@@ -12,7 +12,7 @@ class ClientController extends Controller
     /** Display a listing of the resource. */
     public function index()
     {
-        $clients = (new VetApiService(Auth::user()))->search(VetApiService::CLIENT_MODEL);
+        $clients = (new VetApiService(Auth::user()))->get(VetApiService::CLIENT_MODEL);
         return view('dashboard', ['clients' => $clients, 'title' => "Dashboard"]);
     }
 
@@ -36,9 +36,9 @@ class ClientController extends Controller
     {
         $apiService = new VetApiService(Auth::user());
 
-        $client = $apiService->search(VetApiService::CLIENT_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1)[0];
+        $client = $apiService->get(VetApiService::CLIENT_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1)[0];
 
-        $pets = $apiService->search(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
+        $pets = $apiService->get(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
 
         return view('clients.show', compact('client', 'pets'));
     }
@@ -70,7 +70,7 @@ class ClientController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $clients = (new VetApiService(Auth::user()))->search(VetApiService::CLIENT_MODEL, 'last_name', $query);
+        $clients = (new VetApiService(Auth::user()))->get(VetApiService::CLIENT_MODEL, 'last_name', $query);
         return view('dashboard', ['clients' => $clients, 'title' => "Search result for '$query'"]);
     }
 }

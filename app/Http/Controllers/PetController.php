@@ -28,7 +28,7 @@ class PetController extends Controller
     public function show(int $id)
     {
         $petData = (new VetApiService(Auth::user()))
-            ->search(VetApiService::PET_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1);
+            ->get(VetApiService::PET_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1);
         if (empty($petData)) {
             logger("APIShowPet: No pet with id: $id");
             return redirect()->route('clients.index');
