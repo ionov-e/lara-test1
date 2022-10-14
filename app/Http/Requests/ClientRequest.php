@@ -26,7 +26,7 @@ class ClientRequest extends FormRequest
     {
         return [
                 'email' => ['required', 'email'],
-                'last_name' => ['required'],
+                'last_name' => ['required', 'string'],
             ]
             +
             ($this->isMethod('POST') ? $this->store() : $this->update());

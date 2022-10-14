@@ -26,7 +26,7 @@ class ChangeApiKeyRequest extends FormRequest
     {
         return [
             'url' => ['required', 'url'],
-            'key' => ['required', new CheckApiAuth()],
+            'key' => ['bail', 'required', 'string', new CheckApiAuth()],
         ];
     }
 }

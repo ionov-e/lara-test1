@@ -27,11 +27,11 @@ class CreateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', 'unique:users'],
-            'name' => ['required'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => ['bail', 'required', 'email', 'unique:users'],
+            'name' => ['required', 'string'],
+            'password' => ['bail', 'required', 'confirmed', Rules\Password::defaults()],
             'url' => ['required', 'url'],
-            'key' => ['required', new CheckApiAuth()],
+            'key' => ['bail', 'required', 'string', new CheckApiAuth()],
         ];
     }
 

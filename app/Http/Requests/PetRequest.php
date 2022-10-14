@@ -25,9 +25,9 @@ class PetRequest extends FormRequest
     public function rules(): array
     {
         return [
-                'alias' => ['required'],
-                'type_id' => ['required'],
-                'breed_id' => ['required'],
+                'alias' => ['required', 'string'],
+                'type_id' => ['required', 'numeric', 'min:0'],
+                'breed_id' => ['required', 'numeric', 'min:0'],
             ]
             +
             ($this->isMethod('POST') ? $this->store() : $this->update());
