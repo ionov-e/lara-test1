@@ -20,7 +20,6 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'key.checked'])->group(function () {
-    Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
     Route::resource('clients', ClientController::class);
     Route::get('/search', 'App\Http\Controllers\ClientController@search');
     Route::resource('pets', PetController::class)->except(['create', 'index']);
