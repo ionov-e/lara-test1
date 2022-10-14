@@ -21,7 +21,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'key.checked'])->group(function () {
     Route::resource('clients', ClientController::class);
-    Route::get('/search', 'App\Http\Controllers\ClientController@search');
+    Route::get('/search', [ClientController::class, 'search']);
     Route::resource('pets', PetController::class)->except(['create', 'index']);
     Route::get('/create-pet-for-owner/{id}', [PetController::class, 'create'])->name('pets.create');
 });
