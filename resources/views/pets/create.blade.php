@@ -10,11 +10,9 @@
             {{ __('Create Pet For Owner') }} {{ $ownerId }}
         </h2>
 
-        <form method="POST" action="{{ route('pets.store') }}">
+        <form method="POST" action="{{ route('clients.pets.store', $ownerId) }}">
 
             @csrf
-
-            <input type="hidden" name="owner_id" value="{{ $ownerId }}">
 
             <div>
                 <x-input-label for="alias" :value="__('alias')" />

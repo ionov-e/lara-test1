@@ -35,9 +35,7 @@ class PetRequest extends FormRequest
 
     protected function store()
     {
-        return [
-            'owner_id' => ['required'],
-        ];
+        return [];
     }
 
     protected function update()

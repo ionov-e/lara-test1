@@ -15,13 +15,15 @@ class PetController extends Controller
     }
 
     /** Store a newly created resource in storage. */
-    public function store(PetRequest $request)
+    public function store(PetRequest $request, int $id)
     {
         $validatedData = $request->validated();
+        $validatedData['owner_id'] = $id;
+
         (new VetApiService(Auth::user()))
             ->create(VetApiService::PET_MODEL, $validatedData);
 
-        return redirect()->route('clients.show', $validatedData['owner_id']);
+        return redirect()->route('clients.show', $id);
     }
 
     /** Display the specified resource. */

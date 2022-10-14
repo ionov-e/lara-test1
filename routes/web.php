@@ -22,8 +22,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'key.checked'])->group(function () {
     Route::resource('clients', ClientController::class);
     Route::get('/search', [ClientController::class, 'search']);
-    Route::resource('pets', PetController::class)->except(['create', 'index']);
-    Route::get('/create-pet-for-owner/{id}', [PetController::class, 'create'])->name('pets.create');
+    Route::resource('clients.pets', PetController::class)->except(['index'])->shallow();
 });
 
 require __DIR__ . '/auth.php';
