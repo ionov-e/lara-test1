@@ -19,7 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'key.checked'])->group(function () {
     Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
     Route::resource('clients', ClientController::class);
     Route::get('/search', 'App\Http\Controllers\ClientController@search');

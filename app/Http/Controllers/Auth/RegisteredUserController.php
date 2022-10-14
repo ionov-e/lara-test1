@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangeApiKeyRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
 use App\Models\UserSetting;
@@ -46,6 +47,16 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        return redirect(RouteServiceProvider::HOME);
+    }
+
+    public function editApiSettings(ChangeApiKeyRequest $request)
+    {
+        $validatedData = $request->validated();
+        $userSetting = UserSetting::find(Auth::user()->id);
+        $userSetting->fill($validatedData);
+        $userSetting->save();
 
         return redirect(RouteServiceProvider::HOME);
     }

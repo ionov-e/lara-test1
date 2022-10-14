@@ -38,8 +38,12 @@ class CheckApiAuth implements DataAwareRule, InvokableRule
      */
     public function __invoke($attribute, $value, $fail)
     {
-        if (!VetApiService::authenticateUser($value, $this->data['url'])) {
-            $fail('URL & API key do not pass validation. Please, check both corresponding fields');
+        try {
+            if (VetApiService::authenticateUser($value, $this->data['url'])) {
+                return;
+            }
+        } catch (\Exception $e) {
         }
+        $fail('URL & API key do not pass validation. Please, check both corresponding fields');
     }
 }
