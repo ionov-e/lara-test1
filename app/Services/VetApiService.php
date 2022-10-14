@@ -37,7 +37,7 @@ class VetApiService
     }
 
     /**
-     * Возвращает массив с моделям, удовлетворяющих запросу. Если используется только перван параметр - фильтра не будет
+     * Возвращает массив с моделям, удовлетворяющих запросу. Если используется только первый параметр - фильтра не будет
      *
      * @param string $model например 'client'
      * @param string $searchKey например 'last_name'
@@ -69,57 +69,118 @@ class VetApiService
 
             $response = json_decode(strval($response->getBody()), true);
 
-            return $response['data'][$model];
+            if ($response['success']) {
+                return $response['data'][$model];
+            }
+
+            logger("APISearch failed. Response: " . json_encode($response));
+
         } catch (\Throwable $e) {
             logger("APISearch: Exception: " . $e->getMessage());
-            return [];
         }
+
+        return [];
     }
 
-    public function create(string $model, ValidatedInput|array $validatedData): void
+    public function create(string $model, ValidatedInput|array $validatedData): bool
     {
-        $url = uri($model)->asString();
-        $options = [
-            'headers' => $this->authHeaders->asKeyValue(),
-            'json' => $validatedData
-        ];
-        $this->client->request('POST', $url, $options);
+        try {
+            $url = uri($model)->asString();
+            $options = [
+                'headers' => $this->authHeaders->asKeyValue(),
+                'json' => $validatedData
+            ];
+
+            $response = $this->client->request('POST', $url, $options);
+
+            $response = json_decode(strval($response->getBody()), true);
+
+            if ($response['success']) {
+                return true;
+            }
+
+            logger("APICreate failed: Response: " . json_encode($response));
+
+        } catch (\Throwable $e) {
+            logger("APICreate: Exception: " . $e->getMessage());
+        }
+
+        return false;
     }
 
-    public function edit(string $model, ValidatedInput|array $validatedData, int $id): void
+    public function edit(string $model, ValidatedInput|array $validatedData, int $id): bool
     {
-        $url = uri($model)->asString() . "/$id";
-        $options = [
-            'headers' => $this->authHeaders->asKeyValue(),
-            'json' => $validatedData
-        ];
-        $this->client->request('PUT', $url, $options);
+        try {
+            $url = uri($model)->asString() . "/$id";
+            $options = [
+                'headers' => $this->authHeaders->asKeyValue(),
+                'json' => $validatedData
+            ];
+
+            $response = $this->client->request('PUT', $url, $options);
+
+            $response = json_decode(strval($response->getBody()), true);
+
+            if ($response['success']) {
+                return true;
+            }
+
+            logger("APIEdit failed: Response: " . json_encode($response));
+
+        } catch (\Throwable $e) {
+            logger("APIEdit: Exception: " . $e->getMessage());
+        }
+
+        return false;
     }
 
-    public function delete(string $model, int $id): void
+    public function delete(string $model, int $id): bool
     {
-        $url = uri($model)->asString() . "/$id";
-        $options = ['headers' => $this->authHeaders->asKeyValue()];
-        $this->client->delete($url, $options)->getStatusCode();
+        try {
+            $url = uri($model)->asString() . "/$id";
+            $options = ['headers' => $this->authHeaders->asKeyValue()];
+            $response = $this->client->delete($url, $options);
+
+            $response = json_decode(strval($response->getBody()), true);
+
+            if ($response['success']) {
+                return true;
+            }
+
+            logger("APIDelete failed: Response: " . json_encode($response));
+
+        } catch (\Throwable $e) {
+            logger("APIDelete: Exception: " . $e->getMessage());
+        }
+
+        return false;
     }
 
 
     /** "Удаляет" клиента, предварительно удалив всех его питомцев */
-    public function deleteClient(int $id): void
+    public function deleteClient(int $id): bool
     {
-        $petsData = $this->get(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
+        try {
+            $petsData = $this->get(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
 
-        if (!empty($petsData)) {
-            $petIdsLog = [];
-            foreach ($petsData as $pet) {
-                $petId = $pet['id'];
-                $this->delete(VetApiService::PET_MODEL, $petId);
-                $petIdsLog[] = $petId;
+            if (!empty($petsData)) {
+                $petIdsDeletedWithSuccess = [];
+                foreach ($petsData as $pet) {
+                    $petId = $pet['id'];
+                    if (!$this->delete(VetApiService::PET_MODEL, $petId)) {
+                        throw new \Exception("Pet {$pet['id']} Delete Fail");
+                    }
+                    $petIdsDeletedWithSuccess[] = $petId;
+                }
+                logger("APIDeletedPets for Client $id: " . implode(",", $petIdsDeletedWithSuccess));
             }
-            logger("APIDeletedPets for Client $id: " . implode(",", $petIdsLog));
-        }
 
-        $this->delete(VetApiService::CLIENT_MODEL, $id);
+            return $this->delete(VetApiService::CLIENT_MODEL, $id);
+
+        } catch (\Throwable $e) {
+            logger("APIDeleteClient: Exception: " . $e->getMessage());
+            return false;
+        }
     }
 
     static function authenticateUser(string $apiKey, string $uri): bool
@@ -129,16 +190,20 @@ class VetApiService
 
             $authHeaders = new WithAuth(new ByApiKey(new ApiKey($apiKey)));
 
-            $return = $client->request('GET', '/rest/api/user', ['headers' => $authHeaders->asKeyValue()]);
+            $response = $client->request('GET', '/rest/api/user', ['headers' => $authHeaders->asKeyValue()]);
 
-            if (200 == $return->getStatusCode()) {
+            $response = json_decode(strval($response->getBody()), true);
+
+            if ($response['success']) {
                 return true;
             }
 
+            logger("Authentication failed: Response: " . json_encode($response));
+
         } catch (\Exception|GuzzleException $e) {
+            logger("Authentication: Exception: " . $e->getMessage());
         }
 
         return false;
-
     }
 }
