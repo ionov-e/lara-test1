@@ -27,12 +27,12 @@ class VetApiService
     const LIKE_OPERATOR = 'Otis22\VetmanagerRestApi\Query\Filter\Like';
     const EQUAL_OPERATOR = 'Otis22\VetmanagerRestApi\Query\Filter\EqualTo';
 
-    private Client $client;
     private WithAuth $authHeaders;
+    private string $url;
 
     public function __construct(User $user)
     {
-        $this->client = new Client(['base_uri' => $user->userSetting->url]);
+        $this->url = $user->userSetting->url;
         $this->authHeaders = new WithAuth(new ByApiKey(new ApiKey($user->userSetting->key)));
     }
 
@@ -63,11 +63,7 @@ class VetApiService
                 'query' => $query->asKeyValue()
             ];
 
-            $url = uri($model)->asString();
-
-            $response = $this->client->request('GET', $url, $options);
-
-            $response = json_decode(strval($response->getBody()), true);
+            $response = $this->getResponse('GET', $model, $options);
 
             if ($response['success']) {
                 return $response['data'][$model];
@@ -84,76 +80,17 @@ class VetApiService
 
     public function create(string $model, ValidatedInput|array $validatedData): bool
     {
-        try {
-            $url = uri($model)->asString();
-            $options = [
-                'headers' => $this->authHeaders->asKeyValue(),
-                'json' => $validatedData
-            ];
-
-            $response = $this->client->request('POST', $url, $options);
-
-            $response = json_decode(strval($response->getBody()), true);
-
-            if ($response['success']) {
-                return true;
-            }
-
-            logger("APICreate failed: Response: " . json_encode($response));
-
-        } catch (\Throwable $e) {
-            logger("APICreate: Exception: " . $e->getMessage());
-        }
-
-        return false;
+        return $this->request('POST', $model, $validatedData);
     }
 
     public function edit(string $model, ValidatedInput|array $validatedData, int $id): bool
     {
-        try {
-            $url = uri($model)->asString() . "/$id";
-            $options = [
-                'headers' => $this->authHeaders->asKeyValue(),
-                'json' => $validatedData
-            ];
-
-            $response = $this->client->request('PUT', $url, $options);
-
-            $response = json_decode(strval($response->getBody()), true);
-
-            if ($response['success']) {
-                return true;
-            }
-
-            logger("APIEdit failed: Response: " . json_encode($response));
-
-        } catch (\Throwable $e) {
-            logger("APIEdit: Exception: " . $e->getMessage());
-        }
-
-        return false;
+        return $this->request('PUT', $model, $validatedData, $id);
     }
 
     public function delete(string $model, int $id): bool
     {
-        try {
-            $url = uri($model)->asString() . "/$id";
-            $options = ['headers' => $this->authHeaders->asKeyValue()];
-            $response = $this->client->delete($url, $options);
-
-            $response = json_decode(strval($response->getBody()), true);
-
-            if ($response['success']) {
-                return true;
-            }
-
-            logger("APIDelete failed: Response: " . json_encode($response));
-
-        } catch (\Throwable $e) {
-            logger("APIDelete: Exception: " . $e->getMessage());
-        }
-
-        return false;
+        return $this->request('DELETE', $model, id: $id);
     }
 
 
@@ -181,6 +118,43 @@ class VetApiService
             logger("APIDeleteClient: Exception: " . $e->getMessage());
             return false;
         }
+    }
+
+    private function request(string $method, string $model, array $validatedData = [], int $id = 0): bool
+    {
+        try {
+            $options = ['headers' => $this->authHeaders->asKeyValue()];
+
+            if ($validatedData) {
+                $options['json'] = $validatedData;
+            }
+
+            $response = $this->getResponse($method, $model, $options, $id);
+
+            if ($response['success']) {
+                return true;
+            }
+
+            logger("APIService failed. Method: $method, Model: $model, Id: $id. Response: " . json_encode($response));
+
+        } catch (\Throwable $e) {
+            logger("APIService failed. Method: $method, Model: $model, Id: $id. Exception: " . $e->getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * @throws GuzzleException
+     * @throws \Exception
+     */
+    private function getResponse(string $method, string $model, array $options, int $id = 0): array
+    {
+        $url = $id ? uri($model)->asString() . "/$id" : uri($model)->asString();
+
+        $response = (new Client(['base_uri' => $this->url]))->request($method, $url, $options);
+
+        return json_decode(strval($response->getBody()), true);
     }
 
     static function authenticateUser(string $apiKey, string $uri): bool
