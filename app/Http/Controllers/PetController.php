@@ -61,8 +61,8 @@ class PetController extends Controller
         $notification =
             ((new VetApiService(Auth::user()))
                 ->delete(VetApiService::PET_MODEL, $id))
-                ? 'Pet Was Edited'
-                : 'Pet Was Not Edited';
+                ? 'Pet Has Been Deleted'
+                : 'Pet Has Not Been Edited';
 
         return ViewService::clientList($notification);
     }
