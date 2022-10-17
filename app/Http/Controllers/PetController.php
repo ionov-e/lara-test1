@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PetRequest;
 use App\Services\VetApiService;
+use App\Services\ViewService;
 use Illuminate\Support\Facades\Auth;
 
 class PetController extends Controller
@@ -20,22 +21,19 @@ class PetController extends Controller
         $validatedData = $request->validated();
         $validatedData['owner_id'] = $id;
 
-        (new VetApiService(Auth::user()))
-            ->create(VetApiService::PET_MODEL, $validatedData);
+        $notification =
+            ((new VetApiService(Auth::user()))
+                ->create(VetApiService::PET_MODEL, $validatedData))
+                ? 'Pet Was Created'
+                : 'Pet Was Not Created';
 
-        return redirect()->route('clients.show', $id);
+        return ViewService::clientShow($id, $notification);
     }
 
     /** Display the specified resource. */
     public function show(int $id)
     {
-        $petData = (new VetApiService(Auth::user()))
-            ->get(VetApiService::PET_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1);
-        if (empty($petData)) {
-            logger("APIShowPet: No pet with id: $id");
-            return redirect()->route('clients.index');
-        }
-        return view('pets.show', ['pet' => $petData[0]]);
+        return ViewService::petShow($id);
     }
 
     /** Show the form for editing the specified resource. */
@@ -48,18 +46,24 @@ class PetController extends Controller
     public function update(PetRequest $request, int $id)
     {
         $validatedData = $request->validated();
-        (new VetApiService(Auth::user()))
-            ->edit(VetApiService::PET_MODEL, $validatedData, $id);
+        $notification =
+            ((new VetApiService(Auth::user()))
+                ->edit(VetApiService::PET_MODEL, $validatedData, $id))
+                ? 'Pet Was Edited'
+                : 'Pet Was Not Edited';
 
-        return redirect()->route('pets.show', $id);
+        return ViewService::petShow($id, $notification);
     }
 
     /** Remove the specified resource from storage. */
     public function destroy($id)
     {
-        (new VetApiService(Auth::user()))
-            ->delete(VetApiService::PET_MODEL, $id);
+        $notification =
+            ((new VetApiService(Auth::user()))
+                ->delete(VetApiService::PET_MODEL, $id))
+                ? 'Pet Was Edited'
+                : 'Pet Was Not Edited';
 
-        return redirect()->route('clients.index');
+        return ViewService::clientList($notification);
     }
 }

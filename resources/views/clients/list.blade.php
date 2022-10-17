@@ -5,6 +5,10 @@
         </h2>
     </x-slot>
 
+    @isset($notification)
+        @include('components.alert-notification')
+    @endisset
+
     <div class="py-12 container">
         <div class="mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
