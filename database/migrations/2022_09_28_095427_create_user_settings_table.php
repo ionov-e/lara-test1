@@ -14,7 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('user_settings', function (Blueprint $table) {
-            $table->id('user_id');
+            $table->id('id');
+            $table->integer('user_id');
             $table->string('url');
             $table->string('key');
             $table->timestamps();

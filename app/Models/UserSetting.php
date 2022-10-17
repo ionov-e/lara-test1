@@ -28,19 +28,6 @@ class UserSetting extends Model
 {
     use HasFactory;
 
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'user_id';
-
-    /**
-     * Indicates if the model's ID is auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
 
     public function user()
     {
