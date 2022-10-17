@@ -18,7 +18,7 @@
             <div>
                 <x-input-label for="alias" :value="__('alias')" />
 
-                <x-text-input id="alias" class="block mt-1 w-full" type="text" name="alias" :value="old('alias')" required autofocus />
+                <x-text-input id="alias" class="block mt-1 w-full" type="text" name="alias" value="{{ old('alias', $pet['alias']) }}" required autofocus />
 
                 <x-input-error :messages="$errors->get('alias')" class="mt-2" />
             </div>
@@ -26,7 +26,7 @@
             <div>
                 <x-input-label for="type_id" :value="__('type_id')" />
 
-                <x-text-input id="type_id" class="block mt-1 w-full" type="text" name="type_id" :value="old('type_id')" placeholder="6" required autofocus />
+                <x-text-input id="type_id" class="block mt-1 w-full" type="text" name="type_id" value="{{ old('type_id', $pet['type_id']) }}" placeholder="6" required autofocus />
 
                 <x-input-error :messages="$errors->get('type_id')" class="mt-2" />
             </div>
@@ -34,7 +34,7 @@
             <div>
                 <x-input-label for="breed_id" :value="__('breed_id')" />
 
-                <x-text-input id="breed_id" class="block mt-1 w-full" type="text" name="breed_id" :value="old('breed_id')" placeholder="384" required autofocus />
+                <x-text-input id="breed_id" class="block mt-1 w-full" type="text" name="breed_id" value="{{ old('breed_id', $pet['breed_id']) }}" placeholder="384" required autofocus />
 
                 <x-input-error :messages="$errors->get('breed_id')" class="mt-2" />
             </div>

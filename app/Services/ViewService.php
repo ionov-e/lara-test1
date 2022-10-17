@@ -23,17 +23,27 @@ class ViewService
         return view('clients.show', compact('client', 'pets', 'notification'));
     }
 
-    public static function petShow(string $id, string $notification = null)
+    public static function petShow(int $id, string $notification = null)
+    {
+        return self::petShowOrEdit($id, $notification, 'show');
+    }
+
+    public static function petEdit(int $id, string $notification = null)
+    {
+        return self::petShowOrEdit($id, $notification, 'edit');
+    }
+
+    private static function petShowOrEdit (int $id, $notification, string $method)
     {
         $pets = (new VetApiService(Auth::user()))
             ->get(VetApiService::PET_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1);
         if (empty($pets)) {
-            logger("APIShowPet: No pet with id: $id");
+            logger("API{$method}Pet: No pet with id: $id");
             return ViewService::clientList("No pet with id: $id");
         }
 
         $pet = $pets[0];
 
-        return view('pets.show', compact('pet', 'notification'));
+        return view("pets.$method", compact('pet', 'id', 'notification'));
     }
 }

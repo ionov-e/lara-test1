@@ -39,7 +39,7 @@ class PetController extends Controller
     /** Show the form for editing the specified resource. */
     public function edit(int $id)
     {
-        return view('pets.edit', compact('id'));
+        return ViewService::petEdit($id);
     }
 
     /** Update the specified resource in storage. */

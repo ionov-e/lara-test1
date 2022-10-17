@@ -43,7 +43,9 @@ class ClientController extends Controller
     /** Show the form for editing the specified resource. */
     public function edit($id)
     {
-        return view('clients.edit', compact('id'));
+        $client = (new VetApiService(Auth::user()))->get(VetApiService::CLIENT_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1)[0];
+
+        return view('clients.edit', compact('client', 'id'));
     }
 
     /** Update the specified resource in storage.  */

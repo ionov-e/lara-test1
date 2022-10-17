@@ -19,7 +19,7 @@
                 <x-input-label for="last_name" :value="__('last_name')"/>
 
                 <x-text-input id="last_name" class="block mt-1 w-full" type="text" name="last_name"
-                              :value="old('last_name')" required autofocus/>
+                              value="{{ old('last_name', $client['last_name']) }}" required autofocus/>
 
                 <x-input-error :messages="$errors->get('last_name')" class="mt-2"/>
             </div>
@@ -27,7 +27,7 @@
             <div class="mt-4">
                 <x-input-label for="email" :value="__('email')"/>
 
-                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
+                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" value="{{ old('email', $client['email']) }}"
                               required/>
 
                 <x-input-error :messages="$errors->get('email')" class="mt-2"/>
