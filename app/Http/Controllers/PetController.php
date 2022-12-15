@@ -23,7 +23,7 @@ class PetController extends Controller
 
         $notification =
             ((new VetApiService(Auth::user()))
-                ->create(VetApiService::PET_MODEL, $validatedData))
+                ->create(VetApiService::MODEL_PET, $validatedData))
                 ? 'Pet Was Created'
                 : 'Pet Was Not Created';
 
@@ -48,7 +48,7 @@ class PetController extends Controller
         $validatedData = $request->validated();
         $notification =
             ((new VetApiService(Auth::user()))
-                ->edit(VetApiService::PET_MODEL, $validatedData, $id))
+                ->edit(VetApiService::MODEL_PET, $validatedData, $id))
                 ? 'Pet Was Edited'
                 : 'Pet Was Not Edited';
 
@@ -60,7 +60,7 @@ class PetController extends Controller
     {
         $notification =
             ((new VetApiService(Auth::user()))
-                ->delete(VetApiService::PET_MODEL, $id))
+                ->delete(VetApiService::MODEL_PET, $id))
                 ? 'Pet Has Been Deleted'
                 : 'Pet Has Not Been Edited';
 

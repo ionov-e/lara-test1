@@ -28,7 +28,7 @@ class ClientController extends Controller
         $validatedData = $request->validated();
         $notification =
             ((new VetApiService(Auth::user()))
-                ->create(VetApiService::CLIENT_MODEL, $validatedData))
+                ->create(VetApiService::MODEL_CLIENT, $validatedData))
                 ? 'Client Was Created'
                 : 'Client Was Not Created';
         return ViewService::clientList($notification);
@@ -43,7 +43,7 @@ class ClientController extends Controller
     /** Show the form for editing the specified resource. */
     public function edit($id)
     {
-        $client = (new VetApiService(Auth::user()))->get(VetApiService::CLIENT_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1)[0];
+        $client = (new VetApiService(Auth::user()))->get(VetApiService::MODEL_CLIENT, 'id', $id, VetApiService::OPERATOR_EQUAL, 1)[0];
 
         return view('clients.edit', compact('client', 'id'));
     }
@@ -54,7 +54,7 @@ class ClientController extends Controller
         $validatedData = $request->validated();
         $notification =
             ((new VetApiService(Auth::user()))
-                ->edit(VetApiService::CLIENT_MODEL, $validatedData, $id))
+                ->edit(VetApiService::MODEL_CLIENT, $validatedData, $id))
                 ? 'Client Was Updated'
                 : 'Client Was Not Updated';
         return ViewService::clientList($notification);
@@ -75,7 +75,7 @@ class ClientController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $clients = (new VetApiService(Auth::user()))->get(VetApiService::CLIENT_MODEL, 'last_name', $query);
+        $clients = (new VetApiService(Auth::user()))->get(VetApiService::MODEL_CLIENT, 'last_name', $query);
         return view('clients.list', ['clients' => $clients, 'title' => "Search result for '$query'"]);
     }
 }

@@ -21,11 +21,11 @@ use function Otis22\VetmanagerRestApi\uri;
 class VetApiService
 {
 
-    const CLIENT_MODEL = 'client';
-    const PET_MODEL = 'pet';
+    const MODEL_CLIENT = 'client';
+    const MODEL_PET = 'pet';
 
-    const LIKE_OPERATOR = 'Otis22\VetmanagerRestApi\Query\Filter\Like';
-    const EQUAL_OPERATOR = 'Otis22\VetmanagerRestApi\Query\Filter\EqualTo';
+    const OPERATOR_LIKE = 'Otis22\VetmanagerRestApi\Query\Filter\Like';
+    const OPERATOR_EQUAL = 'Otis22\VetmanagerRestApi\Query\Filter\EqualTo';
 
     private WithAuth $authHeaders;
     private string $url;
@@ -37,17 +37,16 @@ class VetApiService
     }
 
     /**
-     * Возвращает массив с моделям, удовлетворяющих запросу. Если используется только первый параметр - фильтра не будет
-     *
-     * @param string $model например 'client'
+     * @param self::MODEL_* $model например 'client'
      * @param string $searchKey например 'last_name'
      * @param string $searchValue например 'Михалков'
+     * @param self::OPERATOR_* $operator
      * @param int $limit максимальное количество возвращаемых элементов в массиве
      * @param int $currentPage для пагинации
      *
      * @return array Каждый элемент будет в себе содержать все значения от сервера
      */
-    public function get(string $model, string $searchKey = '', string $searchValue = '', string $operator = self::LIKE_OPERATOR, int $limit = 50, int $currentPage = 0): array
+    public function get(string $model, string $searchKey = '', string $searchValue = '', string $operator = self::OPERATOR_LIKE, int $limit = 50, int $currentPage = 0): array
     {
         try {
             if (empty($searchKey)) {
@@ -98,13 +97,13 @@ class VetApiService
     public function deleteClient(int $id): bool
     {
         try {
-            $petsData = $this->get(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
+            $petsData = $this->get(VetApiService::MODEL_PET, 'owner_id', $id, VetApiService::OPERATOR_EQUAL);
 
             if (!empty($petsData)) {
                 $petIdsDeletedWithSuccess = [];
                 foreach ($petsData as $pet) {
                     $petId = $pet['id'];
-                    if (!$this->delete(VetApiService::PET_MODEL, $petId)) {
+                    if (!$this->delete(VetApiService::MODEL_PET, $petId)) {
                         throw new \Exception("Pet {$pet['id']} Delete Fail");
                     }
                     $petIdsDeletedWithSuccess[] = $petId;
@@ -112,7 +111,7 @@ class VetApiService
                 logger("APIDeletedPets for Client $id: " . implode(",", $petIdsDeletedWithSuccess));
             }
 
-            return $this->delete(VetApiService::CLIENT_MODEL, $id);
+            return $this->delete(VetApiService::MODEL_CLIENT, $id);
 
         } catch (\Throwable $e) {
             logger("APIDeleteClient: Exception: " . $e->getMessage());

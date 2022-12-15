@@ -8,7 +8,7 @@ class ViewService
 {
     public static function clientList(string $notification = null)
     {
-        $clients = (new VetApiService(Auth::user()))->get(VetApiService::CLIENT_MODEL);
+        $clients = (new VetApiService(Auth::user()))->get(VetApiService::MODEL_CLIENT);
         return view('clients.list', ['clients' => $clients, 'title' => "Client List", 'notification' => $notification]);
     }
 
@@ -16,9 +16,9 @@ class ViewService
     {
         $apiService = new VetApiService(Auth::user());
 
-        $client = $apiService->get(VetApiService::CLIENT_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1)[0];
+        $client = $apiService->get(VetApiService::MODEL_CLIENT, 'id', $id, VetApiService::OPERATOR_EQUAL, 1)[0];
 
-        $pets = $apiService->get(VetApiService::PET_MODEL, 'owner_id', $id, VetApiService::EQUAL_OPERATOR);
+        $pets = $apiService->get(VetApiService::MODEL_PET, 'owner_id', $id, VetApiService::OPERATOR_EQUAL);
 
         return view('clients.show', compact('client', 'pets', 'notification'));
     }
@@ -36,7 +36,7 @@ class ViewService
     private static function petShowOrEdit (int $id, $notification, string $method)
     {
         $pets = (new VetApiService(Auth::user()))
-            ->get(VetApiService::PET_MODEL, 'id', $id, VetApiService::EQUAL_OPERATOR, 1);
+            ->get(VetApiService::MODEL_PET, 'id', $id, VetApiService::OPERATOR_EQUAL, 1);
         if (empty($pets)) {
             logger("API{$method}Pet: No pet with id: $id");
             return ViewService::clientList("No pet with id: $id");
